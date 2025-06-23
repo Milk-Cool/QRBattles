@@ -1,0 +1,25 @@
+services:
+  qrbattles:
+    build: .
+    ports:
+      - "5328:5328"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-qrbattles}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-unsecure}
+      POSTGRES_DB: ${POSTGRES_DB:-qrbattles}
+      POSTGRES_HOST: postgres
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-qrbattles}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-unsecure}
+      POSTGRES_DB: ${POSTGRES_DB:-qrbattles}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-qrbattles}"]
+      interval: 1s
+      timeout: 2s
+      retries: 10
