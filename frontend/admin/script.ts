@@ -77,6 +77,10 @@ const updateIcons = async () => {
         img.src = `/api/icons/${iconID}`;
         img.title = iconID;
         img.height = 64;
+        img.addEventListener("copy", e => {
+            e.clipboardData?.setData("text/plain", iconID);
+            e.preventDefault();
+        });
         document.querySelector("#icons")?.appendChild(img);
     }
 }

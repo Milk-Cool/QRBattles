@@ -7,6 +7,9 @@
     margin: .5em;
     padding: .5em;
 }
+#icons > img {
+    margin: .5em;
+}
 #cards > div > canvas {
     cursor: pointer;
 }
