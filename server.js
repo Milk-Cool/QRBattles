@@ -16,7 +16,8 @@ app.use(expressSession({
     }),
     secret: process.env.COOKIE_SECRET,
     resave: false,
-    cookie: { maxAge: 10e12 }
+    cookie: { maxAge: 10e12 },
+    saveUninitialized: false
 }));
 
 app.use("/api", apiRouter);

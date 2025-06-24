@@ -1,0 +1,12 @@
+.hidden {
+    display: none;
+}
+
+#cards > div, #icons {
+    border: 1px solid black;
+    margin: .5em;
+    padding: .5em;
+}
+#cards > div > canvas {
+    cursor: pointer;
+}

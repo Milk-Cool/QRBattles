@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin panel</title>
+        <link href="/admin/style.css" rel="stylesheet">
+        <script src="/admin/script.ts" type="module" defer></script>
+    </head>
+    <body>
+        <div id="login">
+            <form id="loginform">
+                <input autocomplete="username" value="qrbattles" hidden>
+                <input name="key" type="password">
+                <input type="submit">
+            </form>
+        </div>
+        <div id="forms" class="hidden">
+            <form id="newcard" action="/api/admin/newcard" method="post">
+                <h2>New card</h2>
+                <input name="key" hidden>
+                <input type="text" name="name" placeholder="Name"><br>
+                <input type="text" name="description" placeholder="Description"><br>
+                <label for="rarity">Rarity: </label><select name="rarity" id="rarity">
+                    <option value="1">Common</option>
+                    <option value="2">Rare</option>
+                    <option value="3">Epic</option>
+                </select><br>
+                <input type="text" pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" name="icon" placeholder="Icon ID"><br>
+                <label for="type">Type: </label><select name="type">
+                    <option value="1">Warrior</option>
+                    <option value="2">Mage</option>
+                    <option value="3">Archer</option>
+                </select><br>
+                <input type="submit">
+            </form>
+            <form id="newicon" action="/api/admin/newicon" method="post" enctype="multipart/form-data" class="keyquery">
+                <h2>New icon</h2>
+                <input type="file" name="icon" accept=".png">
+                <input type="submit">
+            </form>
+            <div id="icons"></div>
+            <div id="cards"></div>
+        </div>
+    </body>
+</html>

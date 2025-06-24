@@ -32,7 +32,9 @@
     "connect-pg-simple": "^10.0.0",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
+    "multer": "^2.0.1",
     "pg": "^8.16.2",
+    "qrious": "^4.0.2",
     "vite": "^6.3.5",
     "vite-express": "^0.21.1"
   }
