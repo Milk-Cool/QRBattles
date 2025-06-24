@@ -10,6 +10,11 @@ services:
       COOKIE_SECRET: ${COOKIE_SECRET:-unsecure}
       POSTGRES_HOST: postgres
     env_file: .env
+    develop:
+      watch:
+        - path: frontend
+          action: sync+restart
+          target: /opt/app/frontend
     depends_on:
       postgres:
         condition: service_healthy
