@@ -1,6 +1,10 @@
 FROM node:24
 
-COPY . .
+# https://stackoverflow.com/a/35774741
+COPY package.json /tmp/package.json
+RUN cd /tmp && npm install --verbose
+RUN mkdir -p /opt/app && cp -a /tmp/node_modules /opt/app
 
-RUN npm i --verbose
+WORKDIR /opt/app
+COPY . .
 CMD npm start

@@ -2,7 +2,8 @@ import express from "express";
 import ViteExpress from "vite-express";
 import expressSession from "express-session";
 import connectPgSimple from "connect-pg-simple";
-import { pool } from "./index.js";
+import { initDb, pool } from "./index.js";
+import apiRouter from "./api/index.js";
 const pgSession = connectPgSimple(expressSession);
 
 const port = 5328;
@@ -18,6 +19,18 @@ app.use(expressSession({
     cookie: { maxAge: 10e12 }
 }));
 
-app.get("/test", (_, res) => res.send("Hello from express!"));
+app.use("/api", apiRouter);
 
-ViteExpress.listen(app, port, () => console.log(`Listening at :${port}...`));
+(async () => {
+    await initDb();
+    ViteExpress.listen(app, port, () => console.log(`Listening at :${port}...`));
+})();
+
+const stop = async () => {
+    // i'll put stuff here if needed
+    process.exit(0);
+};
+process.on("SIGHUP", async () => await stop());
+process.on("SIGUSR2", async () => await stop());
+process.on("SIGINT", async () => await stop());
+process.on("SIGTERM", async () => await stop());
