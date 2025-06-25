@@ -72,10 +72,8 @@ gameRouter.get("/new", async (req, res) => {
     res.send({ game: redactIDs(games[game]), player: 0 });
 });
 gameRouter.get("/join", async (req, res) => {
-    if(req.session.game !== -1)
-        return res.status(400).send(makeError`You're already in a game!`);
     const game = games.findIndex(x => x && x.code.toUpperCase() === req.query.code.toUpperCase());
-    if(game === -1)
+    if(game === -1 || !games[game])
         return res.status(404).send(makeError`Game code invalid!`);
     if(games[game].started)
         return res.status(400).send(makeError`Game has already started!`);
@@ -90,14 +88,14 @@ gameRouter.get("/join", async (req, res) => {
 // gameRouter.get("/leave", (req, res) => {});
 gameRouter.get("/poll", async (req, res) => {
     const game = req.session.game;
-    if(game === -1) return res.status(400).send(makeError`You're not in a game!`);
+    if(game === -1 || !games[game]) return res.status(400).send(makeError`You're not in a game!`);
     const player = req.session.player;
     const started = games[game].started;
     const loop = resolve => {
+        if(!games[game]) return resolve("destroyed");
         if(!started) {
             if(games[game].started) return resolve("started");
         } else {
-            if(!games[game]) return resolve("destroyed");
             if(games[game].won !== -1) return resolve("done");
             if(games[game].player === player) return resolve("move");
         }
@@ -110,7 +108,7 @@ gameRouter.get("/poll", async (req, res) => {
 });
 gameRouter.get("/move", async (req, res) => {
     const game = req.session.game;
-    if(game === -1) return res.status(400).send(makeError`You're not in a game!`);
+    if(game === -1 || !games[game]) return res.status(400).send(makeError`You're not in a game!`);
     if(!games[game].started)
         return res.send(makeError`The game hasn't started yet!`);
     const player = req.session.player;
@@ -140,7 +138,7 @@ gameRouter.get("/move", async (req, res) => {
         if(x === posX) continue;
         const otherCard = games[game].grid[x][posY];
         if(otherCard.id === "") continue;
-        if(getWinning(card.type, otherCard.type))
+        if(getWinning(card.type, otherCard.type) && games[game].player !== otherCard.placedBy)
             games[game].score[player] += otherCard.rarity;
     }
     for(let y = 0; y < 5; y++) {

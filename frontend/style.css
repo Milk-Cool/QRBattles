@@ -12,6 +12,8 @@ td {
 #deck > div {
     border: 4px double black;
     margin: .5em;
+    margin-top: 2em;
+    margin-bottom: 2em;
     padding: .5em;
     text-align: center;
     display: inline-block;
@@ -30,4 +32,5 @@ td {
     margin: .1em;
     white-space: wrap;
     line-break: anywhere;
+    font-size: 75%;
 }

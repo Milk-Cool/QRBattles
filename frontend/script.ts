@@ -24,28 +24,23 @@ let myPlayerNumber: number = 0;
 let game: Game | null = null;
 
 const tds = document.querySelectorAll("td");
-const move = async (td, id) => {
+const move = async (td, id, cb) => {
     const [x, y] = getCoordinates(td);
 
     const res = await req("move", { x: x.toString(), y: y.toString(), id });
     if(res === null) return false;
     game = res.game;
     update();
+    cb();
     await poll();
 }
 tds.forEach(td => {
-    td.addEventListener("click", async () => {
-        if(!inGame || game === null) return;
-        if(game.player !== myPlayerNumber) return;
-        const id = prompt("Card ID:");
-        await move(td, id);
-    });
     td.addEventListener("drop", async e => {
         if(!inGame || game === null) return;
         if(game.player !== myPlayerNumber) return;
         e.preventDefault();
         const id = e.dataTransfer.getData("text/plain");
-        if(await move(td, id) === false) e.preventDefault();
+        await move(td, id, () => document.querySelector(`[data-id="${id}"]`).remove());
     });
     td.addEventListener("dragover", e => {
         e.preventDefault();
@@ -122,6 +117,7 @@ const poll = async () => {
 const pushCardToDeck = (card: Card) => {
     const div = document.createElement("div");
     div.draggable = true;
+    div.dataset.id = card.id;
     div.addEventListener("dragstart", e => {
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", card.id);
