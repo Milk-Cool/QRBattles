@@ -34,6 +34,10 @@
                     <option value="3">Archer</option>
                 </select><br>
                 <input type="submit">
+            </form><br><br>
+            <form id="claimall" action="/api/admin/claimall">
+                <input name="key" hidden>
+                <input type="submit" value="Claim all">
             </form>
             <form id="newicon" action="/api/admin/newicon" method="post" enctype="multipart/form-data" class="keyquery">
                 <h2>New icon</h2>

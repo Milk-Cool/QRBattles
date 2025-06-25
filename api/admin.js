@@ -51,4 +51,10 @@ adminRouter.get("/deletecard", idMiddleware, async (req, res) => {
     await deleteCard(req.query.id);
     res.redirect("/admin/admin.html#" + req.key);
 });
+adminRouter.get("/claimall", async (req, res) => {
+    const cards = await allCards();
+    req.session.cardIDs = cards.map(x => x.id);
+    await new Promise(resolve => req.session.save(resolve));
+    res.send("OK");
+});
 export default adminRouter;
