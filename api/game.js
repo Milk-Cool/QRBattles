@@ -94,10 +94,13 @@ gameRouter.get("/poll", async (req, res) => {
     const player = req.session.player;
     const started = games[game].started;
     const loop = resolve => {
-        if(!games[game]) return resolve("destroyed");
-        if(!started && games[game].started) return resolve("started");
-        if(games[game].won !== -1) return resolve("done");
-        if(games[game].player === player) return resolve("move");
+        if(!started) {
+            if(games[game].started) return resolve("started");
+        } else {
+            if(!games[game]) return resolve("destroyed");
+            if(games[game].won !== -1) return resolve("done");
+            if(games[game].player === player) return resolve("move");
+        }
         setTimeout(loop, 200, resolve);
     };
     const status = await new Promise(loop);
@@ -108,6 +111,8 @@ gameRouter.get("/poll", async (req, res) => {
 gameRouter.get("/move", async (req, res) => {
     const game = req.session.game;
     if(game === -1) return res.status(400).send(makeError`You're not in a game!`);
+    if(!games[game].started)
+        return res.send(makeError`The game hasn't started yet!`);
     const player = req.session.player;
     if(games[game].player !== player)
         return res.send(makeError`It's not your move yet!`);

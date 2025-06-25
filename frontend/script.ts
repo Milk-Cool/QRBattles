@@ -1,4 +1,6 @@
-import { Game } from "./card";
+import "drag-drop-touch";
+
+import { Card, Game, rarities, types } from "./card";
 
 const getByCoordinates = (x, y) => document.querySelector(`tbody > tr:nth-child(${y + 1}) > td:nth-child(${x + 1})`) as HTMLTableCellElement;
 const getNodeIndex = el => [...el.parentNode.children].indexOf(el); // https://stackoverflow.com/a/40052000
@@ -22,18 +24,34 @@ let myPlayerNumber: number = 0;
 let game: Game | null = null;
 
 const tds = document.querySelectorAll("td");
-tds.forEach(td => td.addEventListener("click", async () => {
-    if(!inGame || game === null) return;
-    if(game.player !== myPlayerNumber) return;
+const move = async (td, id) => {
     const [x, y] = getCoordinates(td);
-    const id = prompt("Card ID:");
-    
+
     const res = await req("move", { x: x.toString(), y: y.toString(), id });
-    if(res === null) return;
+    if(res === null) return false;
     game = res.game;
     update();
     await poll();
-}));
+}
+tds.forEach(td => {
+    td.addEventListener("click", async () => {
+        if(!inGame || game === null) return;
+        if(game.player !== myPlayerNumber) return;
+        const id = prompt("Card ID:");
+        await move(td, id);
+    });
+    td.addEventListener("drop", async e => {
+        if(!inGame || game === null) return;
+        if(game.player !== myPlayerNumber) return;
+        e.preventDefault();
+        const id = e.dataTransfer.getData("text/plain");
+        if(await move(td, id) === false) e.preventDefault();
+    });
+    td.addEventListener("dragover", e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+    });
+});
 
 const create = async () => {
     const res = await req("new");
@@ -55,7 +73,6 @@ const update = () => {
 
     for(let x = 0; x < 5; x++)
         for(let y = 0; y < 5; y++) {
-            console.log(game.grid[x][y]);
             if(game.grid[x][y].placedBy === -1) continue;
             const el = getByCoordinates(x, y);
             el.innerText = `${game.grid[x][y].type} (w${game.grid[x][y].rarity})`;
@@ -80,14 +97,19 @@ const poll = async () => {
 
 // Replace with a nicer GUI later
 (async () => {
+    const f = await fetch("/api/me");
+    const { cards: deck } = await f.json();
+    for(const card of deck)
+        pushCardToDeck(card);
+
     const action = confirm("Confirm to create, cancel to join");
     if(action === true) {
         await create();
         if(game === null) return;
-        inGame = true;
         alert(game.code);
-        update();
         await poll();
+        inGame = true;
+        update();
     } else {
         await join(prompt("Code:"));
         if(game === null) return;
@@ -96,3 +118,34 @@ const poll = async () => {
         await poll();
     }
 })();
+
+const pushCardToDeck = (card: Card) => {
+    const div = document.createElement("div");
+    div.draggable = true;
+    div.addEventListener("dragstart", e => {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", card.id);
+    });
+
+    const name = document.createElement("h3");
+    name.innerText = card.name;
+    div.appendChild(name);
+
+    const icon = document.createElement("img");
+    icon.src = "/api/icons/" + card.icon;
+    div.appendChild(icon);
+
+    const type = document.createElement("h4");
+    type.append(document.createTextNode(rarities[card.rarity]));
+    type.appendChild(document.createElement("br"));
+    type.append(document.createTextNode(types[card.type]));
+    div.appendChild(type);
+    if(card.rarity === 1)
+        div.style.background = "#caf4fa";
+    else if(card.rarity === 2)
+        div.style.background = "#d1faca";
+    else if(card.rarity === 3)
+        div.style.background = "#facacc";
+    
+    document.querySelector("#deck").appendChild(div);
+};
