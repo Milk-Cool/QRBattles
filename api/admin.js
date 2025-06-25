@@ -23,8 +23,8 @@ adminRouter.post("/newcard", async (req, res) => {
     if(!valid.str("description", { min: 1, max: 300 })
         || !valid.str("icon", { regex: REGEX_UUID })
         || !valid.str("name", { min: 1, max: 100 })
-        || !valid.int("rarity", { min: 1, max: 3 })
-        || !valid.int("type", { min: 1, max: 3 }))
+        || !valid.strint("rarity", { min: 1, max: 3 })
+        || !valid.strint("type", { min: 1, max: 3 }))
         return res.status(400).send("Invalid data");
     await createCard({
         description: req.body.description,
