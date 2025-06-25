@@ -88,6 +88,20 @@ export const createIcon = async icon => {
 };
 
 /**
+ * @param {import("crypto").UUID} id Icon ID
+ */
+export const deleteIcon = async id => {
+    await pool.query(`DELETE FROM icons WHERE id = $1`, [id]);
+}
+
+/**
+ * @param {import("crypto").UUID} id Card ID
+ */
+export const deleteCard = async id => {
+    await pool.query(`DELETE FROM cards WHERE id = $1`, [id]);
+}
+
+/**
  * @returns {Promise<Icon[]>} The icons
  */
 export const allIcons = async () => {

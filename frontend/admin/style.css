@@ -10,6 +10,27 @@
 #icons > img {
     margin: .5em;
 }
+#cards > div > * {
+    display: inline-block;
+}
+#cards > div > h4, #cards > div > h2, #cards > div > p {
+    margin: .25em;
+}
+#cards > div > img {
+    width: 32px;
+    height: 32px;
+}
 #cards > div > canvas {
+    cursor: pointer;
+}
+
+.controls {
+    display: inline-block;
+    flex-direction: column;
+}
+.controls > img {
+    display: flex;
+    width: 16px;
+    height: 16px;
     cursor: pointer;
 }

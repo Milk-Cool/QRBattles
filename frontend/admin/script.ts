@@ -19,6 +19,12 @@ const printCanvas = (...els: HTMLCanvasElement[]) => {
 
 function addCard(card: Card) {
     const cardEl = document.createElement("div");
+
+    cardEl.appendChild(createControls(card.id, () => deleteCard(card.id)));
+    
+    const img = document.createElement("img");
+    img.src = "/api/icons/" + card.icon;
+    cardEl.appendChild(img);
     
     const name = document.createElement("h2");
     name.innerText = card.name;
@@ -27,14 +33,12 @@ function addCard(card: Card) {
     const rarityAndType = document.createElement("h4");
     rarityAndType.innerText = `${rarities[card.rarity]} / ${types[card.type]}`;
     cardEl.appendChild(rarityAndType);
+
+    cardEl.appendChild(document.createElement("br"));
     
     const description = document.createElement("p");
     description.innerText = card.description;
     cardEl.appendChild(description);
-    
-    const img = document.createElement("img");
-    img.src = "/api/icons/" + card.icon;
-    cardEl.appendChild(img);
 
     cardEl.appendChild(document.createElement("br"));
 
@@ -54,7 +58,7 @@ function addCard(card: Card) {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     key = formData.get("key")?.toString() || "";
-    const f = await fetch(`/api/admin/cards?key=${key}`);
+    const f = await fetch(`/api/admin/cards?key=${encodeURIComponent(key)}`);
     if(f.status !== 200) {
         alert("Wrong key!");
         return;
@@ -62,16 +66,18 @@ function addCard(card: Card) {
     const j = await f.json() as Card[];
     for(const card of j) addCard(card);
     document.querySelectorAll("[name=\"key\"]").forEach(el => (el as HTMLInputElement).value = key);
-    document.querySelectorAll(".keyquery").forEach(el => (el as HTMLFormElement).action += "?key=" + key);
+    document.querySelectorAll(".keyquery").forEach(el => (el as HTMLFormElement).action += "?key=" + encodeURIComponent(key));
     (document.querySelector("#login") as HTMLDivElement).classList.add("hidden");
     (document.querySelector("#forms") as HTMLDivElement).classList.remove("hidden");
 
     updateIcons();
 });
 const updateIcons = async () => {
-    const f = await fetch("/api/admin/icons?key=" + key);
+    const f = await fetch("/api/admin/icons?key=" + encodeURIComponent(key));
     const j = await f.json();
     for(const icon of j) {
+        document.querySelector("#icons")?.appendChild(createControls(icon.id, () => deleteIcon(icon.id)));
+
         const iconID = icon.id;
         const img = document.createElement("img");
         img.src = `/api/icons/${iconID}`;
@@ -83,4 +89,35 @@ const updateIcons = async () => {
         });
         document.querySelector("#icons")?.appendChild(img);
     }
+};
+
+const createControls = (id, deleteFunc) => {
+    const controls = document.createElement("div");
+    controls.classList.add("controls");
+
+    const copyIcon = document.createElement("img");
+    copyIcon.src = "/copy.png";
+    copyIcon.addEventListener("click", () => {
+        if(!navigator.clipboard) return alert("Clipboard not supported!\nCopy manually: " + id);
+        navigator.clipboard.writeText(id);
+    });
+    controls.appendChild(copyIcon);
+
+    const deleteIcon = document.createElement("img");
+    deleteIcon.src = "/delete.png";
+    deleteIcon.addEventListener("click", () => deleteFunc());
+    controls.appendChild(deleteIcon);
+
+    return controls;
+}
+
+const deleteIcon = async id => {
+    const f = await fetch("/api/admin/deleteicon?key=" + encodeURIComponent(key) + "&id=" + id);
+    if(f.status !== 200) return alert("Deletion unsuccessful");
+    location.reload();
+}
+const deleteCard = async id => {
+    const f = await fetch("/api/admin/deletecard?key=" + encodeURIComponent(key) + "&id=" + id);
+    if(f.status !== 200) return alert("Deletion unsuccessful");
+    location.reload();
 }

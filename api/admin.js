@@ -1,6 +1,6 @@
 import express from "express";
 import { adminMiddleware } from "./middleware/admin.js";
-import { allCards, allIcons, createCard, createIcon } from "../index.js";
+import { allCards, allIcons, createCard, createIcon, deleteCard, deleteIcon } from "../index.js";
 import multer from "multer";
 
 const storage = multer.memoryStorage();
@@ -31,6 +31,16 @@ adminRouter.post("/newicon", upload.single("icon"), async (req, res) => {
     await createIcon({
         buf: req.file.buffer
     });
+    res.redirect("/admin/admin.html");
+});
+adminRouter.get("/deleteicon", async (req, res) => {
+    // TODO: validation
+    await deleteIcon(req.query.id);
+    res.redirect("/admin/admin.html");
+});
+adminRouter.get("/deletecard", async (req, res) => {
+    // TODO: validation
+    await deleteCard(req.query.id);
     res.redirect("/admin/admin.html");
 });
 export default adminRouter;
