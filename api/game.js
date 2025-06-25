@@ -9,6 +9,7 @@ import { resolveCardID } from "../index.js";
  * @prop {import("../index.js").Card["type"] | -1} type
  * @prop {import("../index.js").Card["rarity"] | -1} rarity
  * @prop {0 | 1} placedBy
+ * @prop {import("crypto").UUID | ""} iconID
  */
 /** @typedef {[Cell, Cell, Cell, Cell, Cell]} Row */
 /** @typedef {[Row, Row, Row, Row, Row]} Grid */
@@ -55,7 +56,8 @@ gameRouter.get("/new", async (req, res) => {
             id: "",
             type: -1,
             rarity: -1,
-            placedBy: -1
+            placedBy: -1,
+            iconID: ""
         })).map(x => x()),
         score: [0, 0],
         player: 0,
@@ -132,7 +134,8 @@ gameRouter.get("/move", async (req, res) => {
         id: cardID,
         placedBy: player,
         rarity: card.rarity,
-        type: card.type
+        type: card.type,
+        iconID: card.icon
     };
     for(let x = 0; x < 5; x++) {
         if(x === posX) continue;

@@ -16,12 +16,12 @@ const req = async (action: string, params?: URLSearchParams | Record<string, str
     return j;
 };
 
-const updateScores = scores => (document.querySelector("#score") as HTMLHeadingElement).innerText = scores.join(":");
-const updateMove = myMove => (document.querySelector("#move") as HTMLHeadingElement).innerText = myMove ? "Your move!" : "Wait for your opponent's move...";
-
 let inGame: boolean = false;
 let myPlayerNumber: number = 0;
 let game: Game | null = null;
+
+const updateScores = scores => (document.querySelector("#score") as HTMLHeadingElement).innerText = (myPlayerNumber === 1 ? scores.toReversed() : scores).join(":");
+const updateMove = myMove => (document.querySelector("#move") as HTMLHeadingElement).innerText = myMove ? "Your move!" : "Wait for your opponent's move...";
 
 const tds = document.querySelectorAll("td");
 const move = async (td, id, cb) => {
@@ -70,7 +70,18 @@ const update = () => {
         for(let y = 0; y < 5; y++) {
             if(game.grid[x][y].placedBy === -1) continue;
             const el = getByCoordinates(x, y);
-            el.innerText = `${game.grid[x][y].type} (w${game.grid[x][y].rarity})`;
+            Array.from(el.children).map(x => x.remove());
+
+            const img = document.createElement("img");
+            img.src = "/api/icons/" + game.grid[x][y].iconID;
+            el.appendChild(img);
+
+            el.appendChild(document.createElement("br"));
+
+            const p = document.createElement("p");
+            p.innerText = `${types[game.grid[x][y].type]} (x${game.grid[x][y].rarity})`;
+            el.appendChild(p);
+
             el.style.background = game.grid[x][y].placedBy === myPlayerNumber ? "#ccf" : "#fcc";
         }
 };

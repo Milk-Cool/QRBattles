@@ -12,6 +12,7 @@ export type CardOnGrid = {
     rarity: -1 | 1 | 2 | 3;
     type: -1 | 1 | 2 | 3;
     placedBy: -1 | 0 | 1;
+    iconID: UUID | "";
 };
 export type Row = [CardOnGrid, CardOnGrid, CardOnGrid, CardOnGrid, CardOnGrid];
 export type Grid = [Row, Row, Row, Row, Row];
