@@ -13,7 +13,7 @@
 #cards > div > * {
     display: inline-block;
 }
-#cards > div > h4, #cards > div > h2, #cards > div > p {
+#cards > div > h4, #cards > div > h2 {
     margin: .25em;
 }
 #cards > div > img {

@@ -72,6 +72,12 @@ function addCard(card: Card) {
 
     updateIcons();
 });
+
+if(location.hash) {
+    (document.querySelector("#key") as HTMLInputElement).value = location.hash.replace(/^#/, "");
+    (document.querySelector("#loginform") as HTMLFormElement).dispatchEvent(new SubmitEvent("submit"));
+}
+
 const updateIcons = async () => {
     const f = await fetch("/api/admin/icons?key=" + encodeURIComponent(key));
     const j = await f.json();
