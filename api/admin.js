@@ -36,6 +36,8 @@ adminRouter.post("/newcard", async (req, res) => {
     res.redirect("/admin/admin.html#" + req.key);
 });
 adminRouter.post("/newicon", upload.single("icon"), async (req, res) => {
+    if(!req.file.buffer.subarray(0, 8).equals(Buffer.from("89504e470d0a1a0a", "hex")))
+        return res.status(400).send("Invalid PNG!");
     await createIcon({
         buf: req.file.buffer
     });
