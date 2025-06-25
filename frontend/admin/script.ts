@@ -34,6 +34,10 @@ function addCard(card: Card) {
     rarityAndType.innerText = `${rarities[card.rarity]} / ${types[card.type]}`;
     cardEl.appendChild(rarityAndType);
 
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    cardEl.appendChild(checkbox);
+
     cardEl.appendChild(document.createElement("br"));
     
     const description = document.createElement("p");
@@ -127,3 +131,7 @@ const deleteCard = async id => {
     if(f.status !== 200) return alert("Deletion unsuccessful");
     location.reload();
 }
+
+(document.querySelector("#printsel") as HTMLButtonElement).addEventListener("click", () => {
+    printCanvas(...(Array.from(document.querySelectorAll(`div:has(input[type="checkbox"]:checked) > canvas`)) as HTMLCanvasElement[]));
+});
