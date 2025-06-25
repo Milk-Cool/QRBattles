@@ -2,6 +2,9 @@ import express from "express";
 import { adminMiddleware } from "./middleware/admin.js";
 import { allCards, allIcons, createCard, createIcon, deleteCard, deleteIcon } from "../index.js";
 import multer from "multer";
+import Validator from "./misc/validator.js";
+import { REGEX_UUID } from "./misc/regex.js";
+import { idMiddleware } from "./middleware/id.js";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -16,7 +19,13 @@ adminRouter.get("/icons", async (req, res) => {
     res.send((await allIcons()).map(x => ({ id: x.id })));
 });
 adminRouter.post("/newcard", async (req, res) => {
-    // TODO: validation
+    const valid = new Validator(req.body);
+    if(!valid.str("description", { min: 1, max: 300 })
+        || !valid.str("icon", { regex: REGEX_UUID })
+        || !valid.str("name", { min: 1, max: 100 })
+        || !valid.int("rarity", { min: 1, max: 3 })
+        || !valid.int("type", { min: 1, max: 3 }))
+        return res.status(400).send("Invalid data");
     await createCard({
         description: req.body.description,
         icon: req.body.icon,
@@ -27,19 +36,16 @@ adminRouter.post("/newcard", async (req, res) => {
     res.redirect("/admin/admin.html#" + req.key);
 });
 adminRouter.post("/newicon", upload.single("icon"), async (req, res) => {
-    // TODO: validation
     await createIcon({
         buf: req.file.buffer
     });
     res.redirect("/admin/admin.html#" + req.key);
 });
-adminRouter.get("/deleteicon", async (req, res) => {
-    // TODO: validation
+adminRouter.get("/deleteicon", idMiddleware, async (req, res) => {
     await deleteIcon(req.query.id);
     res.redirect("/admin/admin.html#" + req.key);
 });
-adminRouter.get("/deletecard", async (req, res) => {
-    // TODO: validation
+adminRouter.get("/deletecard", idMiddleware, async (req, res) => {
     await deleteCard(req.query.id);
     res.redirect("/admin/admin.html#" + req.key);
 });
