@@ -87,6 +87,14 @@ const update = () => {
         }
 };
 
+const announceResults = async won => {
+    if(won === "tie") await makeAlert({}, "It's a tie!");
+    else if(won) await makeAlert({}, "You won!");
+    else await makeAlert({}, "You lost :(");
+
+    location.reload();
+}
+
 const poll = async () => {
     const poll = await req("poll");
     if(!poll.status) {
@@ -97,8 +105,12 @@ const poll = async () => {
         await makeAlert({}, "Game destroyed!");
         location.reload();
     } else if(poll.status === "done") {
-        if(poll.won) await makeAlert({}, "You won!");
-        else await makeAlert({}, "You lost :(");
+        await announceResults(poll.won);
+    }
+
+    if(document.querySelector("#deck").children.length === 0 || !document.querySelector("td:empty")) {
+        const res = await req("end");
+        if(res !== null) await announceResults(res.won);
     }
 };
 

@@ -21,7 +21,7 @@ import { resolveCardID } from "../index.js";
  * @prop {boolean} started Whether the game has started yet
  * @prop {number} createTimestamp Creation timestamp (timeout is 5 min after creation)
  * @prop {number} startTimestamp Start timestamp (timeout is 30 min after start)
- * @prop {number} won Who won (P1 = 0, P2 = 1, nobody = -1)
+ * @prop {number} won Who won (P1 = 0, P2 = 1, tie = 2, nobody = -1)
  * @prop {string} code Join code
  */
 
@@ -105,7 +105,7 @@ gameRouter.get("/poll", async (req, res) => {
     };
     const status = await new Promise(loop);
     if(status === "destroyed") res.send({ status: "destroyed" });
-    else if(status === "done") res.send({ status: "done", won: games[game].won === player });
+    else if(status === "done") res.send({ status: "done", won: games[game].won === 2 ? "tie" : games[game].won === player });
     else res.send({ game: redactIDs(games[game]) });
 });
 gameRouter.get("/move", async (req, res) => {
@@ -153,6 +153,24 @@ gameRouter.get("/move", async (req, res) => {
     }
     games[game].player = 1 - player;
     res.send({ game: redactIDs(games[game]) });
+});
+gameRouter.get("/end", async (req, res) => {
+    const game = req.session.game;
+    const player = req.session.player;
+    if(game === -1 || !games[game]) return res.status(400).send(makeError`You're not in a game!`);
+
+    const placedCards = games[game].grid.flat().filter(x => x.placedBy === player);
+    if(placedCards.find(x => x.id === "")) {
+        const leftCards = req.session.cardIDs.filter(x => !placedCards.find(y => y.id === x));
+        if(leftCards.length > 0)
+            return res.status(400).send(makeError`You still have cards left!`);
+    }
+    games[game].won = games[game].score[0] > games[game].score[1]
+        ? 0
+        : games[game].score[0] < games[game].score[1]
+        ? 1
+        : 2;
+    res.send({ won: games[game].won === 2 ? "tie" : games[game].won === player });
 });
 setInterval(() => {
     for(const game in games)

@@ -9,7 +9,6 @@ claimRouter.get("/", idMiddleware, async (req, res) => {
     const card = await resolveCardID(req.query.id);
     if(!card)
         return res.status(404).send("Card not found");
-    console.log(req.session.cardIDs);
     req.session.cardIDs.push(card.id);
     await new Promise(resolve => req.session.save(resolve));
     res.send(card);
