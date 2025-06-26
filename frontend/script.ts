@@ -117,6 +117,8 @@ const poll = async () => {
 const updateDeck = async () => {
     const f = await fetch("/api/me");
     const { cards: deck } = await f.json();
+    if(deck.length < 7)
+        makeAlert({}, "Please note: you can't play with <7 cards!");
     for(const card of deck)
         pushCardToDeck(card);
 };

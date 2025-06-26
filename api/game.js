@@ -49,6 +49,8 @@ const redactIDs = gameObjUnredacted => {
 const gameRouter = express.Router();
 gameRouter.use(gameValidMiddleware);
 gameRouter.get("/new", async (req, res) => {
+    if(req.session.cardIDs.length < 7)
+        return res.status(400).send(makeError`You have <7 cards!`);
     if(req.session.game !== -1)
         delete games[req.session.game];
     const game = games.push({
@@ -74,6 +76,8 @@ gameRouter.get("/new", async (req, res) => {
     res.send({ game: redactIDs(games[game]), player: 0 });
 });
 gameRouter.get("/join", async (req, res) => {
+    if(req.session.cardIDs.length < 7)
+        return res.status(400).send(makeError`You have <7 cards!`);
     const game = games.findIndex(x => x && x.code.toUpperCase() === req.query.code.toUpperCase());
     if(game === -1 || !games[game])
         return res.status(404).send(makeError`Game code invalid!`);
