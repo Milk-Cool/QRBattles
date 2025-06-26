@@ -130,6 +130,7 @@ const startGame = () => {
     document.querySelector("#deck").classList.remove("hidden");
     document.querySelector("#play").classList.add("hidden");
     document.querySelector("#guide").classList.add("hidden");
+    document.querySelector("#guide-top").classList.remove("hidden");
 };
 const startWaiting = () => {
     (document.querySelector("#play") as HTMLButtonElement).innerText = "Waiting for P2...";
