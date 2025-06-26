@@ -129,4 +129,5 @@ td > * {
     margin: .5em;
     padding: .5em;
     border-radius: 50%;
+    cursor: pointer;
 }
