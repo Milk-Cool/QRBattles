@@ -5,10 +5,10 @@ import { idMiddleware } from "./middleware/id.js";
 const claimRouter = express.Router();
 claimRouter.get("/", idMiddleware, async (req, res) => {
     if(req.session.cardIDs.find(x => x === req.query.id))
-        return res.status(400).send("You already have this card!");
+        return res.status(400).send({ error: "You already have this card!" });
     const card = await resolveCardID(req.query.id);
     if(!card)
-        return res.status(404).send("Card not found");
+        return res.status(404).send({ error: "Card not found" });
     req.session.cardIDs.push(card.id);
     await new Promise(resolve => req.session.save(resolve));
     res.send(card);

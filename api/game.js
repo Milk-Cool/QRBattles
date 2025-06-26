@@ -32,7 +32,7 @@ const gameValidMiddleware = (req, _res, next) => {
     if(!games[req.session.game] || games[req.session.game].code !== req.session.code) req.session.game = -1;
     next();
 }
-const makeError = error => ({ error: Array.isArray(error) ? error?.[0] : error });
+const makeError = error => ({ error: Array.isArray(error) ? error.join("") : error });
 
 const getWinning = (what, overWhat) => what === 1 && overWhat === 3 || what === 2 && overWhat === 1 || what === 3 && overWhat === 2;
 
@@ -50,7 +50,7 @@ const gameRouter = express.Router();
 gameRouter.use(gameValidMiddleware);
 gameRouter.get("/new", async (req, res) => {
     if(req.session.cardIDs.length < 7)
-        return res.status(400).send(makeError`You have <7 cards!`);
+        return res.status(400).send(Object.assign(makeError(`You have <7 cards! You currently have ${req.session.cardIDs.length.toString()}.`)));
     if(req.session.game !== -1)
         delete games[req.session.game];
     const game = games.push({
@@ -77,7 +77,7 @@ gameRouter.get("/new", async (req, res) => {
 });
 gameRouter.get("/join", async (req, res) => {
     if(req.session.cardIDs.length < 7)
-        return res.status(400).send(makeError`You have <7 cards!`);
+        return res.status(400).send(Object.assign(makeError(`You have <7 cards! You currently have ${req.session.cardIDs.length.toString()}.`)));
     const game = games.findIndex(x => x && x.code.toUpperCase() === req.query.code.toUpperCase());
     if(game === -1 || !games[game])
         return res.status(404).send(makeError`Game code invalid!`);

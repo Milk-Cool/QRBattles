@@ -21,6 +21,9 @@ app.use(expressSession({
 }));
 
 app.use("/api", apiRouter);
+app.get("/claim/:id", (req, res) => {
+    res.redirect("/claim.html#" + req.params.id);
+});
 
 (async () => {
     await initDb();
