@@ -176,3 +176,14 @@ const pushCardToDeck = (card: Card) => {
     
     document.querySelector("#deck").appendChild(div);
 };
+
+(document.querySelector("#guide") as HTMLAnchorElement).addEventListener("click", async () => {
+    const guideP1 = document.createElement("h4");
+    guideP1.innerText = `This game is kinda like rock-paper-scissors: there are three types of cards, each one beats one other type and loses to the other one. Archer beats mage, mage beats warrior and warrior beats archer. When you place a card, it searches for cards on that are on the same row or column as the one you placed and, if the card you placed is superior, you get points! The player with the most points wins. Good luck!`;
+    guideP1.style.width = "85vw";
+    const guideImg = document.createElement("img");
+    guideImg.style.maxWidth = "35vw";
+    guideImg.style.height = "auto";
+    guideImg.src = "/triangle.svg";
+    await makeAlert({}, guideP1, guideImg);
+});
