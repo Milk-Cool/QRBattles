@@ -1,6 +1,7 @@
 import "drag-drop-touch";
 
 import { Card, Game, rarities, types } from "./card";
+import { makeAlert } from "./alerts";
 
 const getByCoordinates = (x, y) => document.querySelector(`tbody > tr:nth-child(${y + 1}) > td:nth-child(${x + 1})`) as HTMLTableCellElement;
 const getNodeIndex = el => [...el.parentNode.children].indexOf(el); // https://stackoverflow.com/a/40052000
@@ -10,7 +11,7 @@ const req = async (action: string, params?: URLSearchParams | Record<string, str
     const f = await fetch(`/api/game/${action}?${params ? (params instanceof URLSearchParams ? params : new URLSearchParams(params)).toString() : ""}`);
     const j = await f.json();
     if(j.error) {
-        alert(j.error);
+        await makeAlert({}, j.error);
         return null;
     }
     return j;
@@ -93,37 +94,56 @@ const poll = async () => {
 
         update();
     } else if(poll.status === "destroyed") {
-        alert("Game destroyed!");
+        await makeAlert({}, "Game destroyed!");
         location.reload();
     } else if(poll.status === "done") {
-        if(poll.won) alert("You won!");
-        else alert("You lost :(");
+        if(poll.won) await makeAlert({}, "You won!");
+        else await makeAlert({}, "You lost :(");
     }
 };
 
-// Replace with a nicer GUI later
-(async () => {
+const updateDeck = async () => {
     const f = await fetch("/api/me");
     const { cards: deck } = await f.json();
     for(const card of deck)
         pushCardToDeck(card);
+};
+updateDeck();
 
-    const action = confirm("Confirm to create, cancel to join");
+const startGame = () => {
+    inGame = true;
+    document.querySelector("#grid").classList.remove("hidden");
+    document.querySelector("#deck").classList.remove("hidden");
+    document.querySelector("#play").classList.add("hidden");
+    document.querySelector("#guide").classList.add("hidden");
+};
+const startWaiting = () => {
+    (document.querySelector("#play") as HTMLButtonElement).innerText = "Waiting for P2...";
+    (document.querySelector("#play") as HTMLButtonElement).disabled = true;
+};
+
+// Replace with a nicer GUI later
+const play = async () => {
+    const action = await makeAlert({ cancel: true, cancelText: "Join", okText: "Create" }, "Create a game or join an existing one?");
     if(action === true) {
         await create();
         if(game === null) return;
-        alert(game.code);
+        (document.querySelector("#code") as HTMLHeadingElement).innerText = ` | ${game.code.toUpperCase()}`;
+        startWaiting();
         await poll();
-        inGame = true;
+        startGame();
         update();
     } else {
-        await join(prompt("Code:"));
+        const input = document.createElement("input");
+        input.id = "codeinput";
+        await join(await makeAlert({ textInputID: "codeinput" }, "Code:", document.createElement("br"), input));
         if(game === null) return;
-        inGame = true;
+        startGame();
         update();
         await poll();
     }
-})();
+};
+(document.querySelector("#play") as HTMLButtonElement).addEventListener("click", () => play());
 
 const pushCardToDeck = (card: Card) => {
     const div = document.createElement("div");

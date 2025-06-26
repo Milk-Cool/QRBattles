@@ -8,9 +8,17 @@
         <script src="/script.ts" type="module" defer></script>
     </head>
     <body>
-        <h1 id="score">0:0</h1>
-        <h2 id="move"></h2>
-        <table>
+        <div id="status">
+            <h1><span id="score">0:0</span><span id="code"></span></h1>
+            <h2 id="move"></h2>
+        </div>
+        <div id="overlay" class="hidden"></div>
+        <div id="alert" class="hidden"></div>
+        <div id="playdiv">
+            <button id="play">Play</button>
+            <p><a id="guide" href="javascript:void(0)">How to play</a></p>
+        </div>
+        <table id="grid" class="hidden">
             <tbody>
                 <tr><td></td><td></td><td></td><td></td><td></td></tr>
                 <tr><td></td><td></td><td></td><td></td><td></td></tr>
@@ -19,6 +27,6 @@
                 <tr><td></td><td></td><td></td><td></td><td></td></tr>
             </tbody>
         </table>
-        <div id="deck"></div>
+        <div id="deck" class="hidden"></div>
     </body>
 </html>

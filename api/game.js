@@ -32,7 +32,7 @@ const gameValidMiddleware = (req, _res, next) => {
     if(!games[req.session.game] || games[req.session.game].code !== req.session.code) req.session.game = -1;
     next();
 }
-const makeError = error => ({ error });
+const makeError = error => ({ error: Array.isArray(error) ? error?.[0] : error });
 
 const getWinning = (what, overWhat) => what === 1 && overWhat === 3 || what === 2 && overWhat === 1 || what === 3 && overWhat === 2;
 

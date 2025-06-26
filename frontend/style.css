@@ -1,18 +1,45 @@
+body {
+    background: #47914f;
+}
+
+* {
+    font-family: sans-serif;
+}
+
+#status {
+    text-align: center;
+    color: white;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 td {
     width: 15vw;
-    height: 12vh;
-    border: 1px solid black;
+    height: 10vh;
+    border: 6px solid #fffa;
+    border-radius: 1em;
     font-size: large;
     text-align: center;
     vertical-align: middle;
 }
 
+td > * {
+    margin: 0;
+}
+
 #deck {
     overflow-x: scroll;
     white-space: nowrap;
+    background: #fff4;
+    margin-top: .5em;
+    border-radius: 1em;
 }
 #deck > div {
-    border: 4px double black;
+    border: 6px solid #fffa;
+    border-radius: 1em;
     margin: .5em;
     margin-top: 2em;
     margin-bottom: 2em;
@@ -20,7 +47,7 @@ td {
     text-align: center;
     display: inline-block;
     width: 15vw;
-    height: 12vh;
+    height: 10vh;
     min-width: 0;
 }
 #deck > div > img, td > img {
@@ -35,4 +62,53 @@ td {
     white-space: wrap;
     line-break: anywhere;
     font-size: 75%;
+}
+
+.hidden {
+    display: none;
+}
+
+#overlay {
+    z-index: 998;
+    background: #0008;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+#alert {
+    z-index: 999;
+    padding: 1em;
+    border: 6px solid white;
+    border-radius: 1em;
+    color: white;
+    background: rgb(44, 75, 44);
+}
+#alert input {
+    padding: .5em;
+    border: 6px solid black;
+    background: white;
+    border-radius: 1em;
+    color: black;
+    font-size: x-large;
+}
+
+#playdiv, #alert {
+    position: fixed;
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+#playdiv a {
+    color: white;
+}
+#play, .alertbtn {
+    font-size: xx-large;
+    padding: .5em;
+    background: lightgreen;
+    border: 6px solid black;
+    border-radius: 1em;
+    cursor: pointer;
 }
