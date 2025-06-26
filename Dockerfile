@@ -10,6 +10,6 @@ COPY . .
 
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
-RUN if [ "$NODE_ENV" = "production" ]; then echo HIII; npx vite build; fi
+RUN if [ "$NODE_ENV" = "production" ]; then npx vite build; fi
 
 CMD npm start
