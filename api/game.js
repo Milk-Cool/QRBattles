@@ -148,7 +148,7 @@ gameRouter.get("/move", async (req, res) => {
         if(y === posY) continue;
         const otherCard = games[game].grid[posX][y];
         if(otherCard.id === "") continue;
-        if(getWinning(card.type, otherCard.type))
+        if(getWinning(card.type, otherCard.type) && games[game].player !== otherCard.placedBy)
             games[game].score[player] += otherCard.rarity;
     }
     games[game].player = 1 - player;
