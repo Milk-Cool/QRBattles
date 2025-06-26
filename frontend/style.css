@@ -121,3 +121,12 @@ td > * {
     height: auto;
     image-rendering: pixelated;
 }
+
+#guide-top {
+    background: cornflowerblue;
+    color: white;
+    font-weight: bolder;
+    margin: .5em;
+    padding: .5em;
+    border-radius: 50%;
+}
