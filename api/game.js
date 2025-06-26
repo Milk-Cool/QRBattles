@@ -178,9 +178,9 @@ gameRouter.get("/end", async (req, res) => {
 });
 setInterval(() => {
     for(const game in games)
-        if(games[game].started && Date.now() - games[game].startTimestamp >= 30 * 60 * 1000)
+        if(games[game] && games[game].started && Date.now() - games[game].startTimestamp >= 30 * 60 * 1000)
             delete games[game];
-        else if(Date.now() - games[game].createTimestamp >= 5 * 60 * 1000)
+        else if(games[game] && !games[game].started && Date.now() - games[game].createTimestamp >= 5 * 60 * 1000)
             delete games[game];
 }, 60 * 1000);
 export default gameRouter;
